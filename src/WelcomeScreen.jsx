@@ -29,7 +29,7 @@ o.svg"
         </div>
       </div>
       <a
-        href="https://nejla-eh.github.io/meet/privacy.html"
+        href="https://Adeniyi-Bella.github.io/meet-up-app/privacy.html"
         rel="nofollow noopener"
       >
         Privacy policy
