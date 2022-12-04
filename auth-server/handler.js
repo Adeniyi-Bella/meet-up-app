@@ -1,11 +1,3 @@
-// {"web":{"client_id":"53697359011-01anoj5bpkfkhpdne6oqvn50r44sn76k.apps.googleusercontent.com"
-// ,"project_id":"meet-apps-369620",
-// "auth_uri":"https://accounts.google.com/o/oauth2/auth",
-// "token_uri":"https://oauth2.googleapis.com/token",
-// "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
-// "client_secret":"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","redirect_uris":["https://Adeniyi-Bella.github.io/meet-up-app/"],"javascript_origins":["https://Adeniyi-Bella.github.io"]}}
-
-
 const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 const calendar = google.calendar("v3");
@@ -80,6 +72,48 @@ module.exports.getAccessToken = async (event) => {
       })
       .catch((err) => {
         // Handle error
+        console.error(err);
+        return {
+          statusCode: 500,
+          body: JSON.stringify(err),
+        };
+      });
+  };
+
+  module.exports.getCalendarEvents = async (event) => {
+    const oAuth2Client = new OAuth2(client_id, client_secret, redirect_uris[0]);
+    const access_token = decodeURIComponent(
+      `${event.pathParameters.access_token}`
+    );
+    oAuth2Client.setCredentials({ access_token });
+    return new Promise((resolve, reject) => {
+      calendar.events.list(
+        {
+          calendarId: calendar_id,
+          auth: oAuth2Client,
+          timeMin: new Date().toISOString(),
+          singleEvents: true,
+          orderBy: "startTime",
+        },
+        (error, response) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        }
+      );
+    })
+      .then((results) => {
+        return {
+          statusCode: 200,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify({ events: results.data.items }),
+        };
+      })
+      .catch((err) => {
         console.error(err);
         return {
           statusCode: 500,
